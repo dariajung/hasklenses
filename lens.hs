@@ -3,13 +3,15 @@
 import qualified Data.Functor.Identity as I
 import qualified Control.Applicative as A
 
-type Lens s a = Functor f => (a -> f a) -> s -> f s
+type Lens s a = Functor f => (a -> f a) -> (s -> f s)
 
 {- 
     Given a lens focusing on an a inside of an s, and a 
     function from a to a, and an s,  I can give you back
     a modified s from applying the function to the focus point of the lens.
 -}
+
+-- we're mapping our modification "over" the focal point of a
 over :: Lens s a -> (a -> a) -> s -> s
 over ln f s = I.runIdentity $ ln (I.Identity . f) s
 
@@ -22,7 +24,6 @@ set ln x = over ln (const x)
 
 _1 :: Functor f => (a -> f a) -> (a, b) -> f (a, b)
 _1 f (x, y) = fmap (\a -> (a, y)) (f x)
-
 
 data User = User { name :: String, age :: Int } deriving Show
 data Project = Project { owner :: User } deriving Show
